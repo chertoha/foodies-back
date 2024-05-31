@@ -1,0 +1,24 @@
+name: pull-request
+run-name: ${{ github.actor }} run jobs
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches:
+      - release
+      - main
+
+jobs:
+  install-lint-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get repository code
+        uses: actions/checkout@v3
+
+      - name: Install depencies
+        run: npm ci
+
+      - name: Linting
+        run: npm run lint
+
+      - name: Testing
+        run: npm run test

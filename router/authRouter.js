@@ -1,9 +1,9 @@
-import express, { json } from "express";
+import express from "express";
 
 const authRouter = express.Router();
 
 authRouter.get("/test", (req, res) => {
-  res.json({ message: "route is working" });
+  res.json({ message: "cicd works ok" });
 });
 
 export default authRouter;

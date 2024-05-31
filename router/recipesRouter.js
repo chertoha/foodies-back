@@ -1,4 +1,4 @@
-import express, { json } from "express";
+import express from "express";
 
 const recipesRouter = express.Router();
 
