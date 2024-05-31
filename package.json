@@ -7,7 +7,7 @@
     "start": "node server",
     "dev": "nodemon server",
     "test": "cross-env NODE_OPTIONS=--experimental-vm-modules npx jest",
-    "lint": "eslint **/*.js --max-warnings=0"
+    "lint": "eslint --max-warnings=0"
   },
   "author": "",
   "license": "ISC",
