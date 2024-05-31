@@ -8,7 +8,7 @@ on:
       - main
 
 jobs:
-  install:
+  install-lint-test:
     runs-on: ubuntu-latest
     steps:
       - name: Get repository code
@@ -17,20 +17,8 @@ jobs:
       - name: Install depencies
         run: npm ci
 
-  linting:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Get repository code
-        uses: actions/checkout@v3
-
       - name: Linting
         run: npm run lint
-
-  testing:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Get repository code
-        uses: actions/checkout@v3
 
       - name: Testing
         run: npm run test
