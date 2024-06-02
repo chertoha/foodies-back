@@ -9,10 +9,10 @@ import testimonialsRouter from "./testimonialsRouter.js";
 
 const router = express.Router();
 
-router.use("/users", authRouter);
+router.use("/auth", authRouter);
 router.use("/users", usersRouter);
-router.use("/categories", areasRouter);
-router.use("/areas", categoriesRouter);
+router.use("/categories", categoriesRouter);
+router.use("/areas", areasRouter);
 router.use("/ingridients", ingredientsRouter);
 router.use("/testimonials", recipesRouter);
 router.use("/recipes", testimonialsRouter);
