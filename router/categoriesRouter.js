@@ -1,9 +1,8 @@
 import express from "express";
+import categoriesControllers from "../controllers/categoriesControllers.js";
 
 const categoriesRouter = express.Router();
 
-categoriesRouter.get("/test", (req, res) => {
-  res.json({ message: "route is working" });
-});
+categoriesRouter.get("/", categoriesControllers.getCategories);
 
 export default categoriesRouter;
