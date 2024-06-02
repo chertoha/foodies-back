@@ -4,7 +4,7 @@ import recipesControllers from "../controllers/recipesControllers.js";
 
 const recipesRouter = express.Router();
 
-recipesRouter.get("/", recipesControllers.getAllRecipe);
+recipesRouter.get("/", recipesControllers.getAllRecipes);
 
 recipesRouter.get("/:id", recipesControllers.getOneRecipe);
 
