@@ -1,9 +1,11 @@
 import express from "express";
 
+import recipesControllers from "../controllers/recipesControllers.js";
+
 const recipesRouter = express.Router();
 
-recipesRouter.get("/test", (req, res) => {
-  res.json({ message: "route is working" });
-});
+recipesRouter.get("/", recipesControllers.getAllRecipes);
+
+recipesRouter.get("/:id", recipesControllers.getOneRecipe);
 
 export default recipesRouter;

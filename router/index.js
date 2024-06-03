@@ -14,7 +14,7 @@ router.use("/users", usersRouter);
 router.use("/categories", areasRouter);
 router.use("/areas", categoriesRouter);
 router.use("/ingridients", ingredientsRouter);
-router.use("/testimonials", recipesRouter);
-router.use("/recipes", testimonialsRouter);
+router.use("/testimonials", testimonialsRouter);
+router.use("/recipes", recipesRouter);
 
 export default router;
