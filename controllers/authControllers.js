@@ -15,7 +15,7 @@ const registerUser = async (req, res) => {
   const result = await usersServices.addUser({ ...req.body, avatar });
   const { email, name } = result;
 
-  res.status(201).json({ user: { email, name } });
+  res.status(201).json({ user: { email, name, avatar } });
 };
 
 const signinUser = async (req, res) => {
@@ -35,6 +35,7 @@ const signinUser = async (req, res) => {
     user: {
       email,
       name: user.name,
+      avatar: user.avatar,
     },
   });
 };
