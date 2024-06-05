@@ -43,11 +43,13 @@ const getRecipes = async (req, res) => {
   // const totalRecipes = await recipesServices.countRecipes(list);
 
   const filter = {
-    // ...(ingredient && { ingredients: { $match: { id: ingredient._id } } }),
-    ...(ingredient && { $match: { "ingredients.id": ingredient._id } }),
+    // ...(ingredient && { ingredients: { $elemMatch: { id: ingredient._id } } }),
+    // ...(ingredient && { ingredients: { $elemMatch: { "ingredients.id": ingredient._id } } }),
+    // ...(ingredient && { $match: { "ingredients.id": ingredient._id } }),
+    // ingredients: { $elemMatch: { id: "640c2dd963a319ea671e3765" } },
   };
-
-  const recipes = await recipesServices.getRecipeList(filter);
+  console.log(filter);
+  const recipes = await recipesServices.getRecipeList({ filter, settings: { limit, skip } });
   const total = await recipesServices.countRecipes(filter);
 
   res.json({
