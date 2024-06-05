@@ -1,9 +1,10 @@
 import express from "express";
 
+import testimonialsControllers from "../controllers/testimonialsControllers.js";
+
+
 const testimonialsRouter = express.Router();
 
-testimonialsRouter.get("/test", (req, res) => {
-  res.json({ message: "route is working" });
-});
+testimonialsRouter.get("/", testimonialsControllers.getTestimonials);
 
 export default testimonialsRouter;
