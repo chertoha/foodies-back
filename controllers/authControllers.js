@@ -40,7 +40,14 @@ const signinUser = async (req, res) => {
   });
 };
 
+const logoutUser = async (req, res) => {
+  const { _id } = req.user;
+  await usersServices.updateUserById(_id, { token: null });
+  res.status(204).send();
+};
+
 export default {
   registerUser: controllerWrapper(registerUser),
   signinUser: controllerWrapper(signinUser),
+  logoutUser: controllerWrapper(logoutUser),
 };
