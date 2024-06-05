@@ -20,6 +20,18 @@ const userSchema = new Schema(
       type: String,
       required: true,
     },
+    favorites: {
+      type: [{ type: Schema.Types.ObjectId, ref: "recipe" }],
+      default: [],
+    },
+    followers: {
+      type: [{ type: Schema.Types.ObjectId, ref: "user" }],
+      default: [],
+    },
+    following: {
+      type: [{ type: Schema.Types.ObjectId, ref: "user" }],
+      default: [],
+    },
     token: {
       type: String,
       default: null,
