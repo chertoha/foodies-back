@@ -5,11 +5,10 @@ import ingredientsServices from "../services/ingredientsServices.js";
 
 const getIngredients = async (req, res) => {
 
-    const { page = 1, limit = 1000, name } = req.query;
+    const { page = 1, limit = 1000, } = req.query;
     const skip = (page - 1) * limit;
 
-    const filter = { ...(name && { name }) };
-    console.log("filter >>>", filter)
+    const filter = {};
     const fields = {};
     const settings = { skip, limit };
 
@@ -19,7 +18,7 @@ const getIngredients = async (req, res) => {
     res.json({
         total,
         page: Number(page),
-        result
+        result,
     })
 }
 

@@ -7,30 +7,25 @@ import ingredientsServices from "../services/ingredientsServices.js";
 
 
 const getRecipes = async (req, res) => {
-  const { page = 1, limit = 10, category, area, ingredients: name } = req.query;
+  const { page = 1, limit = 10, category = "", area = "", ingredient: ingredientName = "" } = req.query;
 
-  const filter = { ...(category ? { category } : {}), ...(area ? { area } : {}), ...(name ? { name } : {}) };
+  const ingredient = await ingredientsServices.getOneIngredient({ name: ingredientName });
+
+  const filter = {
+    ...(category && { category }), ...(area && { area }), ...(ingredient && { ingredients: { $elemMatch: { id: ingredient.id } } })
+  };
+
   const fields = "-createdAt -updatedAt";
   const skip = (page - 1) * limit;
   const settings = { skip, limit };
 
-  const getIngredients = await ingredientsServices.getIngredients({ filter, fields, settings });
-
-  if (getIngredients.length === 0) {
-    throw HttpError(404, `Sorry, we not find any recipe with ${name} ingredient`);
-  }
-
-  const { _id: owner } = getIngredients[0];
-  const updatedFilter = { owner, ...filter };
-
-  const list = await recipesServices.getRecipeList({ updatedFilter, fields, settings });
-  console.log("recipes", list.length)
-  const totalRecipes = await recipesServices.countRecipes(updatedFilter);
+  const result = await recipesServices.getRecipeList({ filter, fields, settings });
+  const totalRecipes = await recipesServices.countRecipes(filter);
 
   res.json({
     total: totalRecipes,
     page: Number(page),
-    recepies: list,
+    recepies: result,
   });
 };
 
