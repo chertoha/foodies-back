@@ -6,7 +6,7 @@ const getIngredients = (search = {}) => {
     return Ingredient.find(filter, fields, settings)
 };
 
-const countIngredients = filter => Ingredient.countDocuments(filter)
+const countIngredients = filter => Ingredient.countDocuments(filter);
 
 export default {
     getIngredients,

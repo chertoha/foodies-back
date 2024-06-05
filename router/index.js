@@ -19,7 +19,7 @@ router.use("/auth", authRouter);
 router.use("/users", usersRouter);
 router.use("/categories", categoriesRouter);
 router.use("/areas", areasRouter);
-router.use("/ingridients", ingredientsRouter);
+router.use("/ingredients", ingredientsRouter);
 router.use("/testimonials", testimonialsRouter);
 router.use("/recipes", recipesRouter);
 

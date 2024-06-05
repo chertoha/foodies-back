@@ -24,10 +24,12 @@ const getRecipes = async (req, res) => {
   const updatedFilter = { owner, ...filter };
 
   const list = await recipesServices.getRecipeList({ updatedFilter, fields, settings });
-  const totalRecipes = await recipesServices.countRecipes(list);
+  console.log("recipes", list.length)
+  const totalRecipes = await recipesServices.countRecipes(updatedFilter);
 
   res.json({
     total: totalRecipes,
+    page: Number(page),
     recepies: list,
   });
 };

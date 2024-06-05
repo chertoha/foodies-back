@@ -9,14 +9,16 @@ const getIngredients = async (req, res) => {
     const skip = (page - 1) * limit;
 
     const filter = { ...(name && { name }) };
+    console.log("filter >>>", filter)
     const fields = {};
     const settings = { skip, limit };
 
     const result = await ingredientsServices.getIngredients({ filter, fields, settings });
-    const total = await ingredientsServices.countIngredients(result);
+    const total = await ingredientsServices.countIngredients(filter);
 
     res.json({
         total,
+        page: Number(page),
         result
     })
 }
