@@ -5,7 +5,7 @@ import HttpError from "../helpers/HttpError.js";
 
 const getCurrentUser = async (req, res) => {
   const user = req.user;
-  const userRecipes = await recipesServices.recipeList({ owner: user._id });
+  const userRecipes = await recipesServices.getRecipeList({ filter: { owner: user._id } });
   const data = {
     _id: user._id,
     email: user.email,
@@ -26,7 +26,7 @@ const getUser = async (req, res) => {
     throw HttpError(404, "User not found");
   }
 
-  const userRecipes = await recipesServices.recipeList({ owner: user._id });
+  const userRecipes = await recipesServices.getRecipeList({ filter: { owner: user._id } });
   let data = {
     _id: user._id,
     email: user.email,
