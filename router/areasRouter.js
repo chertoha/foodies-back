@@ -1,9 +1,8 @@
 import express from "express";
+import areasControllers from "../controllers/areasControllers.js";
 
 const areasRouter = express.Router();
 
-areasRouter.get("/test", (req, res) => {
-  res.json({ message: "route is working" });
-});
+areasRouter.get("/", areasControllers.getAreas);
 
 export default areasRouter;
