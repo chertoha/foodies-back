@@ -13,9 +13,9 @@ const registerUser = async (req, res) => {
   }
   const avatar = gravatar.url(req.body.email, { d: "identicon" });
   const result = await usersServices.addUser({ ...req.body, avatar });
-  const { email, name } = result;
+  const { _id, email, name } = result;
 
-  res.status(201).json({ user: { email, name, avatar } });
+  res.status(201).json({ user: { _id, email, name, avatar } });
 };
 
 const signinUser = async (req, res) => {
@@ -33,6 +33,7 @@ const signinUser = async (req, res) => {
   res.json({
     token,
     user: {
+      _id: user._id,
       email,
       name: user.name,
       avatar: user.avatar,
