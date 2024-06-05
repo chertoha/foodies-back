@@ -46,7 +46,7 @@ const getRecipes = async (req, res) => {
     // ...(ingredient && { ingredients: { $elemMatch: { id: ingredient._id } } }),
     // ...(ingredient && { ingredients: { $elemMatch: { "ingredients.id": ingredient._id } } }),
     // ...(ingredient && { $match: { "ingredients.id": ingredient._id } }),
-    // ingredients: { $elemMatch: { id: "640c2dd963a319ea671e3765" } },
+    ingredients: { $elemMatch: { id: "640c2dd963a319ea671e3765" } },
   };
   console.log(filter);
   const recipes = await recipesServices.getRecipeList({ filter, settings: { limit, skip } });
