@@ -16,7 +16,7 @@ const getRecipes = async (req, res) => {
   } = req.query;
 
   // const filter = {
-  //   ...(category ? { category } : {}),
+  //   ...(category && { category } ),
   //   ...(area ? { area } : {}),
   //   ...(name ? { name } : {}),
   // };
@@ -31,7 +31,7 @@ const getRecipes = async (req, res) => {
 
   const ingredient = await ingredientsServices.getIngredient({ name: ingredientName });
 
-  // console.log(ingredient);
+  console.log(ingredient);
   // if (getIngredients.length === 0) {
   //   throw HttpError(404, `Sorry, we not find any recipe with ${name} ingredient`);
   // }
@@ -41,15 +41,14 @@ const getRecipes = async (req, res) => {
 
   // const list = await recipesServices.getRecipeList({ updatedFilter, fields, settings });
   // const totalRecipes = await recipesServices.countRecipes(list);
-
   const filter = {
-    // ...(ingredient && { ingredients: { $elemMatch: { id: ingredient._id } } }),
-    // ...(ingredient && { ingredients: { $elemMatch: { "ingredients.id": ingredient._id } } }),
-    // ...(ingredient && { $match: { "ingredients.id": ingredient._id } }),
-    ingredients: { $elemMatch: { id: "640c2dd963a319ea671e3765" } },
+    ...(category && { category }),
+    ...(area && { area }),
+    ...(ingredient && { ingredients: { $elemMatch: { id: ingredient.id } } }),
+    // ...(ingredient && { ingredients: { $elemMatch: { id: "640c2dd963a319ea671e3765" } } }),
+    // ingredients: { $elemMatch: { id: "640c2dd963a319ea671e3765" } },
   };
-  console.log(filter);
-  const recipes = await recipesServices.getRecipeList({ filter, settings: { limit, skip } });
+  const recipes = await recipesServices.getRecipeList({ filter, fields, settings });
   const total = await recipesServices.countRecipes(filter);
 
   res.json({
