@@ -11,10 +11,6 @@ const getRecipes = async (req, res) => {
 
   const ingredient = await ingredientsServices.getOneIngredient({ name: ingredientName });
 
-  if (!ingredient) {
-    throw HttpError(404, `Ingredient ${ingredientName} not found`);
-  }
-
   const filter = {
     ...(category && { category }), ...(area && { area }), ...(ingredient && { ingredients: { $elemMatch: { id: ingredient.id } } })
   };
