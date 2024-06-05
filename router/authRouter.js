@@ -1,9 +1,18 @@
 import express from "express";
+import validateBody from "../helpers/validateBody.js";
+import authControllers from "../controllers/authControllers.js";
+import isBodyEmpty from "../middleware/isBodyEmpty.js";
+import { createUserSchema, signinUserSchema } from "../schemas/usersSchemas.js";
 
 const authRouter = express.Router();
 
-authRouter.get("/test", (req, res) => {
-  res.json({ message: "cicd works ok" });
-});
+authRouter.post(
+  "/signup",
+  isBodyEmpty,
+  validateBody(createUserSchema),
+  authControllers.registerUser
+);
+
+authRouter.post("/signin", isBodyEmpty, validateBody(signinUserSchema), authControllers.signinUser);
 
 export default authRouter;

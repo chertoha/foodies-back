@@ -15,7 +15,7 @@ import { allowedImageExtensions } from "../utils/imageUploadConfig.js";
 
 const router = express.Router();
 
-router.use("/auth", authRouter);
+router.use("/users", authRouter);
 router.use("/users", usersRouter);
 router.use("/categories", categoriesRouter);
 router.use("/areas", areasRouter);
