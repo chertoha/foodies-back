@@ -37,6 +37,10 @@ const recipeSchema = new Schema({
   ingredients: {
     type: Schema.Types.Array,
   },
+  favorite: {
+    type: Boolean,
+    default: false
+  },
 }, { versionKey: false, timestamps: true });
 
 recipeSchema.post("save", handleSaveError);

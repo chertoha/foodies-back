@@ -1,6 +1,6 @@
 import Testimonial from "../models/Testimonial.js"
 
-const getTestimonialsList = () => Testimonial.find();
+const getTestimonialsList = ({ filter, fields, settings } = {}) => Testimonial.find(filter, fields, settings);
 
 const countTestimonials = () => Testimonial.countDocuments();
 

@@ -7,7 +7,7 @@ import ingredientsServices from "../services/ingredientsServices.js";
 
 
 const getRecipes = async (req, res) => {
-  const { page = 1, limit = 10, category = "", area = "", ingredient: ingredientName = "" } = req.query;
+  const { page = 1, limit = 10, category = "", area = "", ingredient: ingredientName = "", } = req.query;
 
   const ingredient = await ingredientsServices.getOneIngredient({ name: ingredientName });
 
@@ -41,7 +41,35 @@ const getOneRecipe = async (req, res) => {
   res.json(recipe);
 };
 
+const createRecipe = async (req, res) => {
+  console.log(req.body)
+
+  const newRecipe = await recipesServices.addRecipe(req.body);
+  res.status(201).json(newRecipe)
+}
+
+const deleteRecipe = async (req, res) => {
+  const { id: _id } = req.params;
+
+  const responce = await recipesServices.removeRecipe({ _id });
+  if (!responce) {
+    throw HttpError(404, "Not found")
+  }
+
+  res.status(201).json(responce)
+}
+
+const updateStatus = async (req, res) => {
+  const { id: _id } = req.params;
+
+  const responce = await recipesServices.updateRecipeStatus({ _id }, req.body)
+  res.status(200).json(responce)
+}
+
 export default {
   getRecipes: controllerWrapper(getRecipes),
   getOneRecipe: controllerWrapper(getOneRecipe),
+  createRecipe: controllerWrapper(createRecipe),
+  deleteRecipe: controllerWrapper(deleteRecipe),
+  updateStatus: controllerWrapper(updateStatus),
 };

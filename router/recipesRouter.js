@@ -1,13 +1,25 @@
 import express from "express";
-
-import isValidId from "../middleware/isValidId.js"
-
 import recipesControllers from "../controllers/recipesControllers.js";
+
+import isValidId from "../middleware/isValidId.js";
+
+import isBodyEmpty from "../middleware/isBodyEmpty.js";
+
+import validateBody from "../helpers/validateBody.js";
+
+import { createRecipeSchema, updateStatusSchema } from "../schemas/recipesSchema.js"
+
 
 const recipesRouter = express.Router();
 
 recipesRouter.get("/", recipesControllers.getRecipes);
 
 recipesRouter.get("/:id", isValidId, recipesControllers.getOneRecipe);
+
+recipesRouter.post("/", isBodyEmpty, validateBody(createRecipeSchema), recipesControllers.createRecipe);
+
+recipesRouter.delete("/:id", isValidId, recipesControllers.deleteRecipe);
+
+recipesRouter.patch("/:id/favorite", isValidId, validateBody(updateStatusSchema), recipesControllers.updateStatus)
 
 export default recipesRouter;
