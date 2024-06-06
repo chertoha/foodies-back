@@ -1,4 +1,5 @@
 import { Schema, model } from "mongoose";
+import { handleSaveError, setUpdateOptions } from "../models/hooks.js"
 
 const recipeSchema = new Schema({
   title: {
@@ -37,6 +38,11 @@ const recipeSchema = new Schema({
     type: Schema.Types.Array,
   },
 }, { versionKey: false, timestamps: true });
+
+recipeSchema.post("save", handleSaveError);
+
+recipeSchema.pre("findOneAndUpdate", setUpdateOptions);
+
 
 const Recipe = model("recipe", recipeSchema);
 
