@@ -2,6 +2,7 @@ import gravatar from "gravatar";
 
 import controllerWrapper from "../decorators/controllerWrapper.js";
 import usersServices from "../services/usersServices.js";
+import recipesServices from "../services/recipesServices.js";
 import HttpError from "../helpers/HttpError.js";
 import { comparePasswords } from "../helpers/encryption.js";
 import { createToken } from "../helpers/jwt.js";
@@ -30,6 +31,7 @@ const signinUser = async (req, res) => {
   }
   const token = createToken({ id: user._id });
   await usersServices.updateUserById(user._id, { token });
+  const userRecipes = await recipesServices.getRecipeList({ filter: { owner: user._id } });
   res.json({
     token,
     user: {
@@ -37,6 +39,10 @@ const signinUser = async (req, res) => {
       email,
       name: user.name,
       avatar: user.avatar,
+      recipesCount: userRecipes.length,
+      favoritesCount: user.favorites.length,
+      followersCount: user.followers.length,
+      followingCount: user.following.length,
     },
   });
 };
