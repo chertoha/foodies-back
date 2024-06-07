@@ -5,17 +5,15 @@ import controllerWrapper from "../decorators/controllerWrapper.js";
 import usersServices from "../services/usersServices.js";
 import recipesServices from "../services/recipesServices.js";
 import HttpError from "../helpers/HttpError.js";
-import constructUserArray from "../helpers/constructUserArray.js";
 
 const getCurrentUser = async (req, res) => {
   const user = req.user;
-  const userRecipes = await recipesServices.getRecipeList({ filter: { owner: user._id } });
   const data = {
     _id: user._id,
     email: user.email,
     name: user.name,
     avatar: user.avatar,
-    recipesCount: userRecipes.length,
+    recipesCount: user.recipes.length,
     favoritesCount: user.favorites.length,
     followersCount: user.followers.length,
     followingCount: user.following.length,
@@ -30,13 +28,12 @@ const getUser = async (req, res) => {
     throw HttpError(404, "User not found");
   }
 
-  const userRecipes = await recipesServices.getRecipeList({ filter: { owner: user._id } });
   let data = {
     _id: user._id,
     email: user.email,
     name: user.name,
     avatar: user.avatar,
-    recipesCount: userRecipes.length,
+    recipesCount: user.recipes.length,
     followersCount: user.followers.length,
   };
 
@@ -63,7 +60,11 @@ const getFollowing = async (req, res) => {
   const skip = (page - 1) * limit;
   const settings = { skip, limit };
 
-  const result = await constructUserArray(user.following, settings);
+  const result = await usersServices.findUsers({
+    filter: { _id: { $in: user.following } },
+    fields: "name email avatar recipes",
+    settings,
+  });
 
   res.json({ page, limit, followingCount: user.following.length, following: result });
 };
@@ -78,6 +79,9 @@ const addFollowing = async (req, res) => {
 
   if (authorizedUser.following.includes(targetUser._id)) {
     throw HttpError(409, "Already following");
+  }
+  if (String(authorizedUser._id) === String(targetUser._id)) {
+    throw HttpError(409, "Cannot follow self");
   }
 
   const updatedUser = await usersServices.updateUserById(authorizedUser._id, {
@@ -127,7 +131,11 @@ const getFollowers = async (req, res) => {
   const skip = (page - 1) * limit;
   const settings = { skip, limit };
 
-  const result = await constructUserArray(user.followers, settings);
+  const result = await usersServices.findUsers({
+    filter: { _id: { $in: user.followers } },
+    fields: "name email avatar recipes",
+    settings,
+  });
 
   res.json({ page, limit, followersCount: user.followers.length, followers: result });
 };
@@ -154,7 +162,7 @@ const getUserRecipes = async (req, res) => {
     settings,
   });
 
-  res.json({ page, limit, recipesCount: userRecipes.length, ownRecipes: userRecipes });
+  res.json({ page, limit, recipesCount: userRecipes.length, recipes: userRecipes });
 };
 
 const updateAvatar = async (req, res) => {
