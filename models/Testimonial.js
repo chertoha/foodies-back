@@ -4,7 +4,7 @@ import { Schema, model } from "mongoose";
 const testimonialSchema = new Schema({
     owner: {
         type: Schema.Types.ObjectId,
-        ref: "user"
+        ref: "user",
     },
     testimonial: {
         type: String,
