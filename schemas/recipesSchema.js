@@ -8,7 +8,7 @@ export const createRecipeSchema = Joi.object({
     description: Joi.string().min(10).max(200).required(),
     thumb: Joi.string(),
     time: Joi.string().min(1).max(3),
-    ingredients: Joi.string().required()
+    ingredients: Joi.array().required()
 });
 
 export const updateStatusSchema = Joi.object({

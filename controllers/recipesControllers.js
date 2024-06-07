@@ -4,6 +4,8 @@ import controllerWrapper from "../decorators/controllerWrapper.js"
 
 import recipesServices from "../services/recipesServices.js";
 import ingredientsServices from "../services/ingredientsServices.js";
+import usersServices from "../services/usersServices.js";
+
 
 
 const getRecipes = async (req, res) => {
@@ -42,28 +44,36 @@ const getOneRecipe = async (req, res) => {
 };
 
 const createRecipe = async (req, res) => {
-  console.log(req.body)
+  const { _id: owner } = req.user;
 
-  const newRecipe = await recipesServices.addRecipe(req.body);
-  res.status(201).json(newRecipe)
+  const newRecipe = await recipesServices.addRecipe({ ...req.body, owner });
+
+  await usersServices.updateUserById(owner, { $push: { favorites: newRecipe._id } });
+
+  res.status(201).json(newRecipe);
 }
 
 const deleteRecipe = async (req, res) => {
   const { id: _id } = req.params;
+  const { _id: owner } = req.user;
 
-  const responce = await recipesServices.removeRecipe({ _id });
-  if (!responce) {
-    throw HttpError(404, "Not found")
+  const response = await recipesServices.removeRecipe({ _id, owner });
+  if (!response) {
+    throw HttpError(404, "Not found");
   }
 
-  res.status(201).json(responce)
+  await usersServices.updateUserById(owner, { $pull: { favorites: _id } });
+
+  // додати видалення рецепту з favorites інших користувачив
+
+  res.json(response);
 }
 
 const updateStatus = async (req, res) => {
   const { id: _id } = req.params;
 
-  const responce = await recipesServices.updateRecipeStatus({ _id }, req.body)
-  res.status(200).json(responce)
+  const response = await recipesServices.updateRecipeStatus({ _id }, req.body)
+  res.status(200).json(response);
 }
 
 export default {

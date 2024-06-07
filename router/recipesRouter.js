@@ -9,6 +9,8 @@ import validateBody from "../helpers/validateBody.js";
 
 import { createRecipeSchema, updateStatusSchema } from "../schemas/recipesSchema.js"
 
+import authenticate from "../middleware/authenticate.js"
+
 
 const recipesRouter = express.Router();
 
@@ -16,9 +18,9 @@ recipesRouter.get("/", recipesControllers.getRecipes);
 
 recipesRouter.get("/:id", isValidId, recipesControllers.getOneRecipe);
 
-recipesRouter.post("/", isBodyEmpty, validateBody(createRecipeSchema), recipesControllers.createRecipe);
+recipesRouter.post("/", authenticate, isBodyEmpty, validateBody(createRecipeSchema), recipesControllers.createRecipe);
 
-recipesRouter.delete("/:id", isValidId, recipesControllers.deleteRecipe);
+recipesRouter.delete("/:id", authenticate, isValidId, recipesControllers.deleteRecipe);
 
 recipesRouter.patch("/:id/favorite", isValidId, validateBody(updateStatusSchema), recipesControllers.updateStatus)
 

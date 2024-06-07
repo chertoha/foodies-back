@@ -12,7 +12,7 @@ const getRecipe = filter => Recipe.findOne(filter);
 
 const addRecipe = data => Recipe.create(data);
 
-const removeRecipe = data => Recipe.findByIdAndDelete(data);
+const removeRecipe = data => Recipe.findOneAndDelete(data);
 
 const updateRecipeStatus = (filter, body) => Recipe.findOneAndUpdate(filter, body);
 
