@@ -82,7 +82,8 @@ const addToFavorites = async (req, res) => {
     throw HttpError(409, "Already in favorites")
   }
 
-  await usersServices.updateUserById(owner, { $push: { favorites: _id } })
+  await usersServices.updateUserById(owner, { $push: { favorites: _id } }) // додавати {recipe: id} замість id ???
+  await recipesServices.updateRecipeFavorite(_id, { $push: { favorite: { owner }, } })
 
   res.json({ message: "Added to favorites" });
 };
@@ -99,6 +100,7 @@ const removeFromFavorites = async (req, res) => {
   }
 
   await usersServices.updateUserById(owner, { $pull: { favorites: _id } });
+  await recipesServices.updateRecipeFavorite(_id, { $pull: { favorite: { owner }, } })
 
   res.json({ message: "Remove from favorites" });
 };

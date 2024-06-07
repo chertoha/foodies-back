@@ -14,7 +14,7 @@ const addRecipe = data => Recipe.create(data);
 
 const removeRecipe = data => Recipe.findOneAndDelete(data);
 
-const updateRecipeStatus = (filter, body) => Recipe.findOneAndUpdate(filter, body);
+const updateRecipeFavorite = (filter, body) => Recipe.findByIdAndUpdate(filter, body);
 
 
 export default {
@@ -23,5 +23,5 @@ export default {
     getRecipe,
     addRecipe,
     removeRecipe,
-    updateRecipeStatus,
+    updateRecipeFavorite,
 };

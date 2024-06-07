@@ -12,5 +12,5 @@ export const createRecipeSchema = Joi.object({
 });
 
 export const updateStatusSchema = Joi.object({
-    favorite: Joi.boolean().required()
+    favorite: Joi.array()
 })

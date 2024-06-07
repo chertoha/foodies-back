@@ -7,7 +7,7 @@ import isBodyEmpty from "../middleware/isBodyEmpty.js";
 
 import validateBody from "../helpers/validateBody.js";
 
-import { createRecipeSchema, updateStatusSchema } from "../schemas/recipesSchema.js"
+import { createRecipeSchema } from "../schemas/recipesSchema.js"
 
 import authenticate from "../middleware/authenticate.js"
 
@@ -22,8 +22,8 @@ recipesRouter.post("/", authenticate, isBodyEmpty, validateBody(createRecipeSche
 
 recipesRouter.delete("/:id", authenticate, isValidId, recipesControllers.deleteRecipe);
 
-recipesRouter.patch("/:id/favorite", authenticate, isValidId, validateBody(updateStatusSchema), recipesControllers.addToFavorites);
+recipesRouter.patch("/:id/favorite", authenticate, isValidId, recipesControllers.addToFavorites);
 
-recipesRouter.delete("/:id/favorite", authenticate, isValidId, validateBody(updateStatusSchema), recipesControllers.removeFromFavorites);
+recipesRouter.delete("/:id/favorite", authenticate, isValidId, recipesControllers.removeFromFavorites);
 
 export default recipesRouter;
