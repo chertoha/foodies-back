@@ -22,6 +22,8 @@ recipesRouter.post("/", authenticate, isBodyEmpty, validateBody(createRecipeSche
 
 recipesRouter.delete("/:id", authenticate, isValidId, recipesControllers.deleteRecipe);
 
-recipesRouter.patch("/:id/favorite", isValidId, validateBody(updateStatusSchema), recipesControllers.updateStatus)
+recipesRouter.patch("/:id/favorite", authenticate, isValidId, validateBody(updateStatusSchema), recipesControllers.addToFavorites);
+
+recipesRouter.delete("/:id/favorite", authenticate, isValidId, validateBody(updateStatusSchema), recipesControllers.removeFromFavorites);
 
 export default recipesRouter;

@@ -43,15 +43,17 @@ const getOneRecipe = async (req, res) => {
   res.json(recipe);
 };
 
+
 const createRecipe = async (req, res) => {
   const { _id: owner } = req.user;
 
   const newRecipe = await recipesServices.addRecipe({ ...req.body, owner });
 
-  await usersServices.updateUserById(owner, { $push: { favorites: newRecipe._id } });
+  await usersServices.updateUserById(owner, { $push: { recipe: newRecipe._id } });
 
   res.status(201).json(newRecipe);
-}
+};
+
 
 const deleteRecipe = async (req, res) => {
   const { id: _id } = req.params;
@@ -62,24 +64,51 @@ const deleteRecipe = async (req, res) => {
     throw HttpError(404, "Not found");
   }
 
-  await usersServices.updateUserById(owner, { $pull: { favorites: _id } });
+  await usersServices.updateUserById(owner, { $pull: { recipe: _id } });
 
   // додати видалення рецепту з favorites інших користувачив
 
   res.json(response);
-}
+};
 
-const updateStatus = async (req, res) => {
+
+const addToFavorites = async (req, res) => {
   const { id: _id } = req.params;
+  const { _id: owner } = req.user;
 
-  const response = await recipesServices.updateRecipeStatus({ _id }, req.body)
-  res.status(200).json(response);
-}
+  const user = await usersServices.findUser({ _id: owner })
+
+  if (user.favorites.includes(_id)) {
+    throw HttpError(409, "Already in favorites")
+  }
+
+  await usersServices.updateUserById(owner, { $push: { favorites: _id } })
+
+  res.json({ message: "Added to favorites" });
+};
+
+
+const removeFromFavorites = async (req, res) => {
+  const { id: _id } = req.params;
+  const { _id: owner } = req.user;
+
+  const user = await usersServices.findUser({ _id: owner });
+
+  if (!user.favorites.includes(_id)) {
+    throw HttpError(404, "Not found");
+  }
+
+  await usersServices.updateUserById(owner, { $pull: { favorites: _id } });
+
+  res.json({ message: "Remove from favorites" });
+};
+
 
 export default {
   getRecipes: controllerWrapper(getRecipes),
   getOneRecipe: controllerWrapper(getOneRecipe),
   createRecipe: controllerWrapper(createRecipe),
   deleteRecipe: controllerWrapper(deleteRecipe),
-  updateStatus: controllerWrapper(updateStatus),
+  addToFavorites: controllerWrapper(addToFavorites),
+  removeFromFavorites: controllerWrapper(removeFromFavorites),
 };
