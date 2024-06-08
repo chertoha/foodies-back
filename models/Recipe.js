@@ -41,9 +41,8 @@ const recipeSchema = new Schema({
     required: true,
   },
   favorite: {
-    type: Schema.Types.Array,
-    ref: "user",
-    default: [],
+    type: Number,
+    default: 0
   },
 }, { versionKey: false, timestamps: true });
 

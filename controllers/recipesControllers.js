@@ -31,6 +31,29 @@ const getRecipes = async (req, res) => {
   });
 };
 
+const getOwnRecipes = async (req, res) => {
+  const { _id: owner } = req.user
+  const filter = { owner };
+  const fields = "";
+
+  const { page = 1, limit = 20 } = req.query;
+  const skip = (page - 1) * limit;
+  const settings = { skip, limit }
+
+  const result = await recipesServices.getRecipeList({ filter, fields, settings });
+  const total = await recipesServices.countRecipes(filter);
+
+  if (!result) {
+    throw HttpError(404, "Not Found")
+  }
+
+  res.json({
+    total,
+    page: Number(page),
+    result: result
+  })
+}
+
 
 const getOneRecipe = async (req, res) => {
   const { id: _id } = req.params;
@@ -49,7 +72,7 @@ const createRecipe = async (req, res) => {
 
   const newRecipe = await recipesServices.addRecipe({ ...req.body, owner });
 
-  await usersServices.updateUserById(owner, { $push: { recipe: newRecipe._id } });
+  await usersServices.updateUserById(owner, { $push: { recipes: newRecipe._id } });
 
   res.status(201).json(newRecipe);
 };
@@ -62,7 +85,8 @@ const deleteRecipe = async (req, res) => {
   const response = await recipesServices.removeRecipe({ _id, owner });
   if (!response) {
     throw HttpError(404, "Not found");
-  }
+  }  // Можливо потрібно уточнювати текст помилки, видалити можна тількі свій рецепт?!
+
 
   await usersServices.updateUserById(owner, { $pull: { recipe: _id } });
 
@@ -83,7 +107,7 @@ const addToFavorites = async (req, res) => {
   }
 
   await usersServices.updateUserById(owner, { $push: { favorites: _id } }) // додавати {recipe: id} замість id ???
-  await recipesServices.updateRecipeFavorite(_id, { $push: { favorite: { owner }, } })
+  await recipesServices.updateRecipeFavorite({ _id }, { $inc: { favorite: +1 } })
 
   res.json({ message: "Added to favorites" });
 };
@@ -100,7 +124,7 @@ const removeFromFavorites = async (req, res) => {
   }
 
   await usersServices.updateUserById(owner, { $pull: { favorites: _id } });
-  await recipesServices.updateRecipeFavorite(_id, { $pull: { favorite: { owner }, } })
+  await recipesServices.updateRecipeFavorite({ _id }, { $inc: { favorite: -1 } })
 
   res.json({ message: "Remove from favorites" });
 };
@@ -108,6 +132,7 @@ const removeFromFavorites = async (req, res) => {
 
 export default {
   getRecipes: controllerWrapper(getRecipes),
+  getOwnRecipes: controllerWrapper(getOwnRecipes),
   getOneRecipe: controllerWrapper(getOneRecipe),
   createRecipe: controllerWrapper(createRecipe),
   deleteRecipe: controllerWrapper(deleteRecipe),

@@ -14,7 +14,9 @@ import authenticate from "../middleware/authenticate.js"
 
 const recipesRouter = express.Router();
 
-recipesRouter.get("/", recipesControllers.getRecipes);
+recipesRouter.get("/", authenticate, recipesControllers.getRecipes);
+
+recipesRouter.get("/own", authenticate, recipesControllers.getOwnRecipes);
 
 recipesRouter.get("/:id", isValidId, recipesControllers.getOneRecipe);
 
@@ -22,7 +24,7 @@ recipesRouter.post("/", authenticate, isBodyEmpty, validateBody(createRecipeSche
 
 recipesRouter.delete("/:id", authenticate, isValidId, recipesControllers.deleteRecipe);
 
-recipesRouter.patch("/:id/favorite", authenticate, isValidId, recipesControllers.addToFavorites);
+recipesRouter.post("/:id/favorite", authenticate, isValidId, recipesControllers.addToFavorites);
 
 recipesRouter.delete("/:id/favorite", authenticate, isValidId, recipesControllers.removeFromFavorites);
 
