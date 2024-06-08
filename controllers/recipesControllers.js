@@ -1,20 +1,29 @@
 import HttpError from "../helpers/HttpError.js";
 
-import controllerWrapper from "../decorators/controllerWrapper.js"
+import controllerWrapper from "../decorators/controllerWrapper.js";
 
 import recipesServices from "../services/recipesServices.js";
 import ingredientsServices from "../services/ingredientsServices.js";
 import usersServices from "../services/usersServices.js";
 
-
+import mongoose, { ObjectId } from "mongoose";
+import Ingredient from "../models/Ingredient.js";
 
 const getRecipes = async (req, res) => {
-  const { page = 1, limit = 10, category = "", area = "", ingredient: ingredientName = "", } = req.query;
+  const {
+    page = 1,
+    limit = 10,
+    category = "",
+    area = "",
+    ingredient: ingredientName = "",
+  } = req.query;
 
   const ingredient = await ingredientsServices.getOneIngredient({ name: ingredientName });
 
   const filter = {
-    ...(category && { category }), ...(area && { area }), ...(ingredient && { ingredients: { $elemMatch: { id: ingredient.id } } })
+    ...(category && { category }),
+    ...(area && { area }),
+    ...(ingredient && { ingredients: { $elemMatch: { id: ingredient.id } } }),
   };
 
   const fields = "-createdAt -updatedAt";
@@ -31,7 +40,6 @@ const getRecipes = async (req, res) => {
   });
 };
 
-
 const getOneRecipe = async (req, res) => {
   const { id: _id } = req.params;
 
@@ -43,9 +51,26 @@ const getOneRecipe = async (req, res) => {
   res.json(recipe);
 };
 
-
 const createRecipe = async (req, res) => {
   const { _id: owner } = req.user;
+
+  // const ingredientsIds = req.body.ingredients.map(({ id }) => id);
+  const ingredientsNames = req.body.ingredients.map(({ name }) => name);
+
+  const result = await ingredientsServices.getIngredients({
+    // filter: { id: { $in: ingredientsIds } },
+    filter: { name: { $in: ingredientsNames } },
+    // filter: { _id: "640c2dd963a319ea671e37aa" },
+    // filter: { name: "Squid" },
+  });
+
+  // const result = await Ingredient.find({ name: "Smoked Haddock" });
+
+  console.log(result);
+
+  if (ingredientsNames.length !== result.length) {
+    throw HttpError(400, "Ingredient fucked up");
+  }
 
   const newRecipe = await recipesServices.addRecipe({ ...req.body, owner });
 
@@ -53,7 +78,6 @@ const createRecipe = async (req, res) => {
 
   res.status(201).json(newRecipe);
 };
-
 
 const deleteRecipe = async (req, res) => {
   const { id: _id } = req.params;
@@ -71,23 +95,21 @@ const deleteRecipe = async (req, res) => {
   res.json(response);
 };
 
-
 const addToFavorites = async (req, res) => {
   const { id: _id } = req.params;
   const { _id: owner } = req.user;
 
-  const user = await usersServices.findUser({ _id: owner })
+  const user = await usersServices.findUser({ _id: owner });
 
   if (user.favorites.includes(_id)) {
-    throw HttpError(409, "Already in favorites")
+    throw HttpError(409, "Already in favorites");
   }
 
-  await usersServices.updateUserById(owner, { $push: { favorites: _id } }) // додавати {recipe: id} замість id ???
-  await recipesServices.updateRecipeFavorite(_id, { $push: { favorite: { owner }, } })
+  await usersServices.updateUserById(owner, { $push: { favorites: _id } }); // додавати {recipe: id} замість id ???
+  await recipesServices.updateRecipeFavorite(_id, { $push: { favorite: { owner } } });
 
   res.json({ message: "Added to favorites" });
 };
-
 
 const removeFromFavorites = async (req, res) => {
   const { id: _id } = req.params;
@@ -100,11 +122,10 @@ const removeFromFavorites = async (req, res) => {
   }
 
   await usersServices.updateUserById(owner, { $pull: { favorites: _id } });
-  await recipesServices.updateRecipeFavorite(_id, { $pull: { favorite: { owner }, } })
+  await recipesServices.updateRecipeFavorite(_id, { $pull: { favorite: { owner } } });
 
   res.json({ message: "Remove from favorites" });
 };
-
 
 export default {
   getRecipes: controllerWrapper(getRecipes),
