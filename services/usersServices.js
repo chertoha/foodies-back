@@ -2,12 +2,12 @@ import User from "../models/User.js";
 import { encryptPassword } from "../helpers/encryption.js";
 
 async function findUser(filter) {
-  return User.findOne(filter);
+  return User.findOne(filter).populate("recipes", "-updatedAt -createdAt");
 }
 
 async function findUsers(search = {}) {
   const { filter, fields, settings } = search;
-  return User.find(filter, fields, settings);
+  return User.find(filter, fields, settings).populate("recipes", "-updatedAt -createdAt");
 }
 
 async function addUser(body) {
