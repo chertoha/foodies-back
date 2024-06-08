@@ -1,10 +1,11 @@
 import HttpError from "../helpers/HttpError.js";
-
 import controllerWrapper from "../decorators/controllerWrapper.js"
 
 import recipesServices from "../services/recipesServices.js";
 import ingredientsServices from "../services/ingredientsServices.js";
 import usersServices from "../services/usersServices.js";
+import { getOneArea } from "../services/areasServices.js";
+import { getOneCategory } from "../services/categoriesServices.js"
 
 import fs from "fs/promises"
 import path from "path";
@@ -81,13 +82,52 @@ const createRecipe = async (req, res) => {
   const { path: oldPath, filename } = req.file;
   const newPath = path.join(avatarPath, filename);
   await fs.rename(oldPath, newPath);
-  const avatarURL = path.join("photos", filename)
+  const avatarURL = path.join("photos", filename);
 
-  const newRecipe = await recipesServices.addRecipe({ ...req.body, owner, thumb: avatarURL });
-  await usersServices.updateUserById(owner, { $push: { recipes: newRecipe._id } });
+  const { area, category, ingredients } = req.body;
+  const arrayIngredientName = ingredients.map(item => item.name);
+
+  const findArea = await getOneArea({ name: area })
+  if (!findArea) {
+    throw HttpError(400, `area ${area} not found`);
+  }
+
+  const findCategory = await getOneCategory({ name: category })
+  if (!findCategory) {
+    throw HttpError(400, `category ${category} not found`)
+  }
+
+  const findIngredients = await ingredientsServices.getIngredients({ filter: { name: { "$in": arrayIngredientName } } })
+  if (arrayIngredientName.length !== findIngredients.length) {
+    throw HttpError(400, `${arrayIngredientName} not found`)
+  }
+
+  console.log("measure >>>", ingredients)
+  console.log("findIngredients >>>", findIngredients)
+
+
+  const result = findIngredients.map((item) => {
+    return { _id: item._id }
+  })
+  console.log("result >>>", result)
+
+  const newRecipe = {
+    ...req.body,
+    area: findArea.name,
+    category: findCategory.name,
+    ingredients: {},
+    owner,
+    thumb: avatarURL
+  }
+
+  // const result = await recipesServices.addRecipe({ ...req.body, owner, thumb: avatarURL });
+  // await usersServices.updateUserById(owner, { $push: { recipes: result._id } });
 
   res.status(201).json(newRecipe);
 };
+
+
+
 
 
 const deleteRecipe = async (req, res) => {
