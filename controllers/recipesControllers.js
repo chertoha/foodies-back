@@ -6,6 +6,10 @@ import recipesServices from "../services/recipesServices.js";
 import ingredientsServices from "../services/ingredientsServices.js";
 import usersServices from "../services/usersServices.js";
 
+import fs from "fs/promises"
+import path from "path";
+
+const avatarPath = path.resolve("public", "photos")
 
 
 const getRecipes = async (req, res) => {
@@ -32,7 +36,8 @@ const getRecipes = async (req, res) => {
 };
 
 const getOwnRecipes = async (req, res) => {
-  const { _id: owner } = req.user
+  const { _id: owner } = req.user;
+
   const filter = { owner };
   const fields = "";
 
@@ -40,7 +45,7 @@ const getOwnRecipes = async (req, res) => {
   const skip = (page - 1) * limit;
   const settings = { skip, limit }
 
-  const result = await recipesServices.getRecipeList({ filter, fields, settings });
+  const result = await recipesServices.getRecipeList({ filter, fields, settings, });
   const total = await recipesServices.countRecipes(filter);
 
   if (!result) {
@@ -70,8 +75,15 @@ const getOneRecipe = async (req, res) => {
 const createRecipe = async (req, res) => {
   const { _id: owner } = req.user;
 
-  const newRecipe = await recipesServices.addRecipe({ ...req.body, owner });
+  if (!req.file) {
+    throw HttpError(400, "Photo is required for create a new recipe")
+  }
+  const { path: oldPath, filename } = req.file;
+  const newPath = path.join(avatarPath, filename);
+  await fs.rename(oldPath, newPath);
+  const avatarURL = path.join("photos", filename)
 
+  const newRecipe = await recipesServices.addRecipe({ ...req.body, owner, thumb: avatarURL });
   await usersServices.updateUserById(owner, { $push: { recipes: newRecipe._id } });
 
   res.status(201).json(newRecipe);
