@@ -2,6 +2,9 @@ import controllerWrapper from "../decorators/controllerWrapper.js";
 import usersServices from "../services/usersServices.js";
 import recipesServices from "../services/recipesServices.js";
 import HttpError from "../helpers/HttpError.js";
+import cloudinary from "../helpers/cloudinary.js";
+import fs from "fs/promises";
+import Jimp from "jimp";
 
 const getCurrentUser = async (req, res) => {
   const user = req.user;
@@ -162,6 +165,32 @@ const getUserRecipes = async (req, res) => {
   res.json({ page, limit, recipesCount: userRecipes.length, recipes: userRecipes });
 };
 
+const updateAvatar = async (req, res) => {
+  if (!req.file) {
+    throw HttpError(400, "No file attached");
+  }
+
+  const { _id } = req.user;
+
+  const { path: filepath } = req.file;
+
+  try {
+    const image = await Jimp.read(filepath);
+    image.resize(240, 240).write(filepath);
+  } catch (error) {
+    await fs.unlink(filepath);
+    throw HttpError(400, `Could not read file. ${error.message}`);
+  }
+
+  const { secure_url } = await cloudinary.uploader.upload(filepath, { folder: "foodies" });
+
+  await fs.unlink(filepath);
+
+  const updatedUser = await usersServices.updateUserById(_id, { avatar: secure_url });
+
+  res.json({ avatar: updatedUser.avatar });
+};
+
 export default {
   getCurrentUser: controllerWrapper(getCurrentUser),
   getUser: controllerWrapper(getUser),
@@ -170,4 +199,5 @@ export default {
   removeFollowing: controllerWrapper(removeFollowing),
   getFollowers: controllerWrapper(getFollowers),
   getUserRecipes: controllerWrapper(getUserRecipes),
+  updateAvatar: controllerWrapper(updateAvatar),
 };
