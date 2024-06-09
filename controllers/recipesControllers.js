@@ -80,7 +80,7 @@ const createRecipe = async (req, res) => {
   }
 
   const { url: recipePhotoURL } = await cloudinary.uploader.upload(req.file.path, {
-    folder: "recipes"
+    folder: "foodies"
   });
   await fs.unlink(req.file.path);
 
@@ -111,10 +111,10 @@ const createRecipe = async (req, res) => {
     thumb: recipePhotoURL,
   }
 
-  const responce = await recipesServices.addRecipe({ ...newRecipe });
-  await usersServices.updateUserById(owner, { $push: { recipes: responce._id } });
+  const response = await recipesServices.addRecipe({ ...newRecipe });
+  await usersServices.updateUserById(owner, { $push: { recipes: response._id } });
 
-  res.status(201).json(responce);
+  res.status(201).json(response);
 };
 
 
