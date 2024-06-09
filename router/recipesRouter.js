@@ -25,7 +25,7 @@ recipesRouter.get("/own", authenticate, recipesControllers.getOwnRecipes);
 
 recipesRouter.get("/:id", isValidId, recipesControllers.getOneRecipe);
 
-recipesRouter.post("/", handleMulterError(configuredUpload), authenticate, validateBody(createRecipeSchema), recipesControllers.createRecipe);
+recipesRouter.post("/", authenticate, handleMulterError(configuredUpload), validateBody(createRecipeSchema), recipesControllers.createRecipe);
 
 recipesRouter.delete("/:id", authenticate, isValidId, recipesControllers.deleteRecipe);
 
