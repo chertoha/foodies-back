@@ -13,6 +13,7 @@ const recipeSchema = new Schema({
   owner: {
     type: Schema.Types.ObjectId,
     ref: "user",
+    required: true,
   },
   area: {
     type: String,
@@ -36,6 +37,12 @@ const recipeSchema = new Schema({
   },
   ingredients: {
     type: Schema.Types.Array,
+    ref: "ingredient",
+    required: true,
+  },
+  favorite: {
+    type: Number,
+    default: 0
   },
 }, { versionKey: false, timestamps: true });
 
