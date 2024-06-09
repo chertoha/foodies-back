@@ -21,6 +21,8 @@ const recipesRouter = express.Router();
 
 recipesRouter.get("/", recipesControllers.getRecipes);
 
+recipesRouter.get("/populate", recipesControllers.getPopulate);
+
 recipesRouter.get("/own", authenticate, recipesControllers.getOwnRecipes);
 
 recipesRouter.get("/:id", isValidId, recipesControllers.getOneRecipe);
@@ -32,5 +34,6 @@ recipesRouter.delete("/:id", authenticate, isValidId, recipesControllers.deleteR
 recipesRouter.post("/:id/favorite", authenticate, isValidId, recipesControllers.addToFavorites);
 
 recipesRouter.delete("/:id/favorite", authenticate, isValidId, recipesControllers.removeFromFavorites);
+
 
 export default recipesRouter;

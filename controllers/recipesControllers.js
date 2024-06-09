@@ -166,6 +166,31 @@ const removeFromFavorites = async (req, res) => {
   res.json({ message: "Remove from favorites" });
 };
 
+const getPopulate = async (req, res) => {
+
+  const { page = 1, limit = 20 } = req.query;
+
+  const filter = { favorite: { $gt: 0 } };
+  const fields = "";
+
+  const skip = (page - 1) * limit;
+  const settings = { skip, limit };
+
+  const populateList = await recipesServices.getRecipeList({ filter, fields, settings }).sort({ "favorite": -1 });
+
+  if (!populateList.length) {
+    throw HttpError(404, "There are no favorite recipes yet")
+  }
+
+  const total = await recipesServices.countRecipes(filter);
+
+  res.json({
+    total,
+    page,
+    responce: populateList
+  })
+}
+
 
 export default {
   getRecipes: controllerWrapper(getRecipes),
@@ -175,4 +200,5 @@ export default {
   deleteRecipe: controllerWrapper(deleteRecipe),
   addToFavorites: controllerWrapper(addToFavorites),
   removeFromFavorites: controllerWrapper(removeFromFavorites),
+  getPopulate: controllerWrapper(getPopulate),
 };
