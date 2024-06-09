@@ -24,6 +24,10 @@ const userSchema = new Schema(
       type: [{ type: Schema.Types.ObjectId, ref: "recipe" }],
       default: [],
     },
+    recipes: {
+      type: [{ type: Schema.Types.ObjectId, ref: "recipe" }],
+      default: [],
+    },
     followers: {
       type: [{ type: Schema.Types.ObjectId, ref: "user" }],
       default: [],
