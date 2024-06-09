@@ -21,7 +21,7 @@ const recipesRouter = express.Router();
 
 recipesRouter.get("/", recipesControllers.getRecipes);
 
-recipesRouter.get("/populate", recipesControllers.getPopulate);
+recipesRouter.get("/popular", recipesControllers.getPopular);
 
 recipesRouter.get("/own", authenticate, recipesControllers.getOwnRecipes);
 
