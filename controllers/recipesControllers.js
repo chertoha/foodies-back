@@ -7,10 +7,8 @@ import usersServices from "../services/usersServices.js";
 import { getOneArea } from "../services/areasServices.js";
 import { getOneCategory } from "../services/categoriesServices.js"
 
+import cloudinary from "../helpers/cloudinary.js"
 import fs from "fs/promises"
-import path from "path";
-
-const avatarPath = path.resolve("public", "photos")
 
 
 const getRecipes = async (req, res) => {
@@ -35,6 +33,7 @@ const getRecipes = async (req, res) => {
     recepies: result,
   });
 };
+
 
 const getOwnRecipes = async (req, res) => {
   const { _id: owner } = req.user;
@@ -79,10 +78,11 @@ const createRecipe = async (req, res) => {
   if (!req.file) {
     throw HttpError(400, "Photo is required for create a new recipe")
   }
-  const { path: oldPath, filename } = req.file;
-  const newPath = path.join(avatarPath, filename);
-  await fs.rename(oldPath, newPath);
-  const avatarURL = path.join("photos", filename);
+
+  const { url: recipePhotoURL } = await cloudinary.uploader.upload(req.file.path, {
+    folder: "recipes"
+  });
+  await fs.unlink(req.file.path);
 
   const { area, category, ingredients } = req.body;
   const arrayIngredientName = ingredients.map(item => item.name);
@@ -99,35 +99,23 @@ const createRecipe = async (req, res) => {
 
   const findIngredients = await ingredientsServices.getIngredients({ filter: { name: { "$in": arrayIngredientName } } })
   if (arrayIngredientName.length !== findIngredients.length) {
-    throw HttpError(400, `${arrayIngredientName} not found`)
+    throw HttpError(400, `Ingredients not found`);
   }
-
-  console.log("measure >>>", ingredients)
-  console.log("findIngredients >>>", findIngredients)
-
-
-  const result = findIngredients.map((item) => {
-    return { _id: item._id }
-  })
-  console.log("result >>>", result)
 
   const newRecipe = {
     ...req.body,
     area: findArea.name,
     category: findCategory.name,
-    ingredients: {},
+    ingredients,
     owner,
-    thumb: avatarURL
+    thumb: recipePhotoURL,
   }
 
-  // const result = await recipesServices.addRecipe({ ...req.body, owner, thumb: avatarURL });
-  // await usersServices.updateUserById(owner, { $push: { recipes: result._id } });
+  const responce = await recipesServices.addRecipe({ ...newRecipe });
+  await usersServices.updateUserById(owner, { $push: { recipes: responce._id } });
 
-  res.status(201).json(newRecipe);
+  res.status(201).json(responce);
 };
-
-
-
 
 
 const deleteRecipe = async (req, res) => {
@@ -136,15 +124,12 @@ const deleteRecipe = async (req, res) => {
 
   const response = await recipesServices.removeRecipe({ _id, owner });
   if (!response) {
-    throw HttpError(404, "Not found");
-  }  // Можливо потрібно уточнювати текст помилки, видалити можна тількі свій рецепт?!
-
+    throw HttpError(400, "Recipe not found");
+  }
 
   await usersServices.updateUserById(owner, { $pull: { recipe: _id } });
 
-  // додати видалення рецепту з favorites інших користувачив
-
-  res.json(response);
+  res.json({ message: "Deteled succeffully" });
 };
 
 
@@ -158,7 +143,7 @@ const addToFavorites = async (req, res) => {
     throw HttpError(409, "Already in favorites")
   }
 
-  await usersServices.updateUserById(owner, { $push: { favorites: _id } }) // додавати {recipe: id} замість id ???
+  await usersServices.updateUserById(owner, { $push: { favorites: _id } })
   await recipesServices.updateRecipeFavorite({ _id }, { $inc: { favorite: +1 } })
 
   res.json({ message: "Added to favorites" });
