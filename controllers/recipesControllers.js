@@ -30,7 +30,7 @@ const getRecipes = async (req, res) => {
   res.json({
     total: totalRecipes,
     page: Number(page),
-    recepies: result,
+    result,
   });
 };
 
@@ -55,7 +55,7 @@ const getOwnRecipes = async (req, res) => {
   res.json({
     total,
     page: Number(page),
-    result: result
+    result,
   })
 }
 
@@ -111,10 +111,10 @@ const createRecipe = async (req, res) => {
     thumb: recipePhotoURL,
   }
 
-  const response = await recipesServices.addRecipe({ ...newRecipe });
-  await usersServices.updateUserById(owner, { $push: { recipes: response._id } });
+  const result = await recipesServices.addRecipe({ ...newRecipe });
+  await usersServices.updateUserById(owner, { $push: { recipes: result._id } });
 
-  res.status(201).json(response);
+  res.status(201).json(result);
 };
 
 
@@ -176,18 +176,13 @@ const getPopular = async (req, res) => {
   const skip = (page - 1) * limit;
   const settings = { skip, limit };
 
-  const popularList = await recipesServices.getRecipeList({ filter, fields, settings }).sort({ "favorite": -1 });
-
-  if (popularList.length === 0) {
-    throw HttpError(404, "There are no favorite recipes yet")
-  }
-
+  const result = await recipesServices.getRecipeList({ filter, fields, settings }).sort({ "favorite": -1 });
   const total = await recipesServices.countRecipes(filter);
 
   res.json({
     total,
     page,
-    responce: popularList
+    result,
   })
 }
 
