@@ -1,4 +1,5 @@
 import express from "express";
+import swaggerUi from "swagger-ui-express";
 import authRouter from "./authRouter.js";
 import usersRouter from "./usersRouter.js";
 import areasRouter from "./areasRouter.js";
@@ -7,7 +8,7 @@ import ingredientsRouter from "./ingredientsRouter.js";
 import recipesRouter from "./recipesRouter.js";
 import testimonialsRouter from "./testimonialsRouter.js";
 import controllerWrapper from "../decorators/controllerWrapper.js";
-
+import swaggerSpec from "../helpers/swagger.js";
 import cloudinary from "../helpers/cloudinary.js";
 import handleMulterError from "../middleware/handleMulterError.js";
 import upload from "../middleware/upload.js";
@@ -15,6 +16,7 @@ import { allowedImageExtensions } from "../utils/imageUploadConfig.js";
 
 const router = express.Router();
 
+router.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 router.use("/users", authRouter);
 router.use("/users", usersRouter);
 router.use("/categories", categoriesRouter);
