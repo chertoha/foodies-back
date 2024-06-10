@@ -24,7 +24,7 @@ const getRecipes = async (req, res) => {
   const skip = (page - 1) * limit;
   const settings = { skip, limit };
 
-  const result = await recipesServices.getRecipeList({ filter, fields, settings });
+  const result = await recipesServices.getRecipeList({ filter, fields, settings }).populate("owner", "name avatar");
   const totalRecipes = await recipesServices.countRecipes(filter);
 
   res.json({
@@ -63,13 +63,35 @@ const getOwnRecipes = async (req, res) => {
 const getOneRecipe = async (req, res) => {
   const { id: _id } = req.params;
 
-  const recipe = await recipesServices.getRecipe({ _id });
+  const recipe = await recipesServices.getRecipe({ _id }).populate("owner", "name avatar");
 
   if (!recipe) {
     throw HttpError(404, "Not Found");
   }
   res.json(recipe);
 };
+
+
+const getFavorites = async (req, res) => {
+  const { _id } = req.user;
+  const { page = 1, limit = 20 } = req.query;
+
+  const user = await usersServices.findUser({ _id });
+  const filter = { _id: { "$in": user.favorites } };
+
+  const fields = "";
+  const skip = (page - 1) * limit;
+  const settings = { skip, limit };
+
+  const result = await recipesServices.getRecipeList({ filter, fields, settings });
+  const total = await recipesServices.countRecipes(filter);
+
+  res.json({
+    total,
+    page,
+    result,
+  })
+}
 
 
 const createRecipe = async (req, res) => {
@@ -122,8 +144,8 @@ const deleteRecipe = async (req, res) => {
   const { id: _id } = req.params;
   const { _id: owner } = req.user;
 
-  const response = await recipesServices.removeRecipe({ _id, owner });
-  if (!response) {
+  const result = await recipesServices.removeRecipe({ _id, owner });
+  if (!result) {
     throw HttpError(400, "Recipe not found");
   }
 
@@ -143,7 +165,7 @@ const addToFavorites = async (req, res) => {
     throw HttpError(409, "Already in favorites")
   }
 
-  await usersServices.updateUserById(owner, { $push: { favorites: _id } })
+  await usersServices.updateUserById(owner, { $push: { favorites: { _id } } })
   await recipesServices.updateRecipeFavorite({ _id }, { $inc: { favorite: +1 } })
 
   res.json({ message: "Added to favorites" });
@@ -196,4 +218,5 @@ export default {
   addToFavorites: controllerWrapper(addToFavorites),
   removeFromFavorites: controllerWrapper(removeFromFavorites),
   getPopular: controllerWrapper(getPopular),
+  getFavorites: controllerWrapper(getFavorites),
 };

@@ -25,6 +25,8 @@ recipesRouter.get("/popular", recipesControllers.getPopular);
 
 recipesRouter.get("/own", authenticate, recipesControllers.getOwnRecipes);
 
+recipesRouter.get("/favorites", authenticate, recipesControllers.getFavorites);
+
 recipesRouter.get("/:id", isValidId, recipesControllers.getOneRecipe);
 
 recipesRouter.post("/", authenticate, handleMulterError(configuredUpload), validateBody(createRecipeSchema), recipesControllers.createRecipe);
