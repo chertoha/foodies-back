@@ -30,7 +30,7 @@ const getRecipes = async (req, res) => {
   res.json({
     total: totalRecipes,
     page: Number(page),
-    recepies: result,
+    result,
   });
 };
 
@@ -55,7 +55,7 @@ const getOwnRecipes = async (req, res) => {
   res.json({
     total,
     page: Number(page),
-    result: result
+    result,
   })
 }
 
@@ -111,10 +111,10 @@ const createRecipe = async (req, res) => {
     thumb: recipePhotoURL,
   }
 
-  const response = await recipesServices.addRecipe({ ...newRecipe });
-  await usersServices.updateUserById(owner, { $push: { recipes: response._id } });
+  const result = await recipesServices.addRecipe({ ...newRecipe });
+  await usersServices.updateUserById(owner, { $push: { recipes: result._id } });
 
-  res.status(201).json(response);
+  res.status(201).json(result);
 };
 
 
@@ -166,6 +166,26 @@ const removeFromFavorites = async (req, res) => {
   res.json({ message: "Remove from favorites" });
 };
 
+const getPopular = async (req, res) => {
+
+  const { page = 1, limit = 20 } = req.query;
+
+  const filter = { favorite: { $gt: 0 } };
+  const fields = "";
+
+  const skip = (page - 1) * limit;
+  const settings = { skip, limit };
+
+  const result = await recipesServices.getRecipeList({ filter, fields, settings }).sort({ "favorite": -1 });
+  const total = await recipesServices.countRecipes(filter);
+
+  res.json({
+    total,
+    page,
+    result,
+  })
+}
+
 
 export default {
   getRecipes: controllerWrapper(getRecipes),
@@ -175,4 +195,5 @@ export default {
   deleteRecipe: controllerWrapper(deleteRecipe),
   addToFavorites: controllerWrapper(addToFavorites),
   removeFromFavorites: controllerWrapper(removeFromFavorites),
+  getPopular: controllerWrapper(getPopular),
 };
