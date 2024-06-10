@@ -23,12 +23,28 @@ const getCurrentUser = async (req, res) => {
 
 const getUser = async (req, res) => {
   const { id: _id } = req.params;
+
+  if (String(req.user._id) === String(_id)) {
+    const data = {
+      _id: req.user._id,
+      email: req.user.email,
+      name: req.user.name,
+      avatar: req.user.avatar,
+      recipesCount: req.user.recipes.length,
+      followersCount: req.user.followers.length,
+      favoritesCount: req.user.favorites.length,
+      followingCount: req.user.following.length,
+    };
+    res.json(data);
+    return;
+  }
+
   const user = await usersServices.findUser({ _id });
   if (!user) {
     throw HttpError(404, "User not found");
   }
 
-  let data = {
+  const data = {
     _id: user._id,
     email: user.email,
     name: user.name,
@@ -36,15 +52,6 @@ const getUser = async (req, res) => {
     recipesCount: user.recipes.length,
     followersCount: user.followers.length,
   };
-
-  if (String(req.user._id) === String(user._id)) {
-    data = {
-      ...data,
-      favoritesCount: user.favorites.length,
-      followingCount: user.following.length,
-    };
-  }
-
   res.json(data);
 };
 
