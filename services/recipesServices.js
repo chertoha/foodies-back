@@ -2,7 +2,7 @@ import Recipe from "../models/Recipe.js";
 
 const getRecipeList = (search = {}) => {
     const { filter, fields, settings } = search;
-    console.log("getRecipeList search >>>", search)
+    // console.log("getRecipeList search >>>", search)
     return Recipe.find(filter, fields, settings)
 };
 
