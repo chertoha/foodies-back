@@ -10,9 +10,9 @@ const getCategories = async (req, res) => {
   }
   const skip = (page - 1) * limit;
   const settings = { skip, limit };
-  const categories = await getAllCategories({ settings });
-  const categoriesCount = await countCategories();
-  res.json({ page, limit, categoriesCount, categories });
+  const result = await getAllCategories({ settings });
+  const total = await countCategories();
+  res.json({ page, total, result });
 };
 
 export default {
