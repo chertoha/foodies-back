@@ -12,10 +12,24 @@ const registerUser = async (req, res) => {
     throw HttpError(409, "Email in use");
   }
   const avatar = gravatar.url(req.body.email, { d: "identicon" });
-  const result = await usersServices.addUser({ ...req.body, avatar });
-  const { _id, email, name } = result;
+  const newUser = await usersServices.addUser({ ...req.body, avatar });
+  const { _id, email, name } = newUser;
+  const token = createToken({ id: _id });
+  await usersServices.updateUserById(_id, { token });
 
-  res.status(201).json({ user: { _id, email, name, avatar } });
+  res.status(201).json({
+    token,
+    user: {
+      _id,
+      email,
+      name,
+      avatar,
+      recipesCount: newUser.recipes.length,
+      favoritesCount: newUser.favorites.length,
+      followersCount: newUser.followers.length,
+      followingCount: newUser.following.length,
+    },
+  });
 };
 
 const signinUser = async (req, res) => {
