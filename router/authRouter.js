@@ -42,6 +42,10 @@ const authRouter = express.Router();
  *             schema:
  *               type: object
  *               properties:
+ *                 token:
+ *                   type: string
+ *                   description: Bearer token for the user
+ *                   example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
  *                 user:
  *                   type: object
  *                   properties:
