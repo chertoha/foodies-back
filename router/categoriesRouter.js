@@ -49,16 +49,13 @@ const categoriesRouter = express.Router();
  *                     properties:
  *                       _id:
  *                         type: string
- *                         description: Unique identifier for the category
  *                         example: "6462a6cd4c3d0ddd28897f92"
  *                       name:
  *                         type: string
- *                         description: Name of the category
  *                         example: "Vegetarian"
  *                       img:
  *                         type: string
  *                         format: uri
- *                         description: URL to the category image
  *                         example: "https://res.cloudinary.com/dvnlykxgs/image/upload/v1717961676/foodies/zud4m7zdpxbobak37t1y.jpg"
  *       400:
  *         description: Bad Request, invalid query parameters
@@ -69,7 +66,6 @@ const categoriesRouter = express.Router();
  *               properties:
  *                 message:
  *                   type: string
- *                   description: Error message indicating that the query parameters are invalid
  *                   example: "Page and limit must be integers"
  *     tags:
  *       - Categories
