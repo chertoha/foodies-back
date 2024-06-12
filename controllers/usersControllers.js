@@ -73,7 +73,7 @@ const getFollowing = async (req, res) => {
     settings,
   });
 
-  res.json({ page, limit, followingCount: user.following.length, following: result });
+  res.json({ page, total: user.following.length, result });
 };
 
 const addFollowing = async (req, res) => {
@@ -144,7 +144,7 @@ const getFollowers = async (req, res) => {
     settings,
   });
 
-  res.json({ page, limit, followersCount: user.followers.length, followers: result });
+  res.json({ page, total: user.followers.length, result });
 };
 
 const getUserRecipes = async (req, res) => {
@@ -169,7 +169,7 @@ const getUserRecipes = async (req, res) => {
     settings,
   });
 
-  res.json({ page, limit, recipesCount: userRecipes.length, recipes: userRecipes });
+  res.json({ page, total: userRecipes.length, result: userRecipes });
 };
 
 const updateAvatar = async (req, res) => {
