@@ -80,6 +80,11 @@ const authRouter = express.Router();
  *                       items:
  *                         type: string
  *                         example: "60c54b2f9b1d4e3f2c123456"
+ *                     following:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *                         example: "60c54b2f9b1d4e3f2c123456"
  *       409:
  *         description: Conflict, user already registered
  *         content:
@@ -166,6 +171,11 @@ authRouter.post(
  *                       type: integer
  *                       example: 8
  *                     favorites:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *                         example: "60c54b2f9b1d4e3f2c123456"
+ *                     following:
  *                       type: array
  *                       items:
  *                         type: string

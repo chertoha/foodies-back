@@ -18,6 +18,7 @@ const getCurrentUser = async (req, res) => {
     followersCount: user.followers.length,
     followingCount: user.following.length,
     favorites: user.favorites,
+    following: user.following,
   };
   res.json(data);
 };
@@ -36,6 +37,7 @@ const getUser = async (req, res) => {
       favoritesCount: req.user.favorites.length,
       followingCount: req.user.following.length,
       favorites: req.user.favorites,
+      following: req.user.following,
     };
     res.json(data);
     return;
