@@ -23,9 +23,45 @@ const options = {
     servers: [{ url: BACKEND_API_URL }],
     security: [{ bearerAuth: [] }],
   },
-  apis: ["./router/*.js"],
+  apis: ["./router/*.js", "./helpers/swagger.js"],
 };
 
 const swaggerSpec = swaggerJSDoc(options);
+
+/**
+ * @openapi
+ * components:
+ *   responses:
+ *     UnauthorizedError:
+ *       description: Unauthorized, the user is not authenticated
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               message:
+ *                 type: string
+ *                 example: "Not authorized"
+ *     PaginationError:
+ *       description: Bad Request, page and limit must be valid integers
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               message:
+ *                 type: string
+ *                 example: "Page and limit must be integers"
+ *     UserNotFoundError:
+ *       description: User not found
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               message:
+ *                 type: string
+ *                 example: "User not found"
+ */
 
 export default swaggerSpec;
