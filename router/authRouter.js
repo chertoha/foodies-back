@@ -63,6 +63,23 @@ const authRouter = express.Router();
  *                       type: string
  *                       format: uri
  *                       example: "http://example.com/avatars/jane.jpg"
+ *                     recipesCount:
+ *                       type: integer
+ *                       example: 5
+ *                     favoritesCount:
+ *                       type: integer
+ *                       example: 10
+ *                     followersCount:
+ *                       type: integer
+ *                       example: 7
+ *                     followingCount:
+ *                       type: integer
+ *                       example: 8
+ *                     favorites:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *                         example: "60c54b2f9b1d4e3f2c123456"
  *       409:
  *         description: Conflict, user already registered
  *         content:
@@ -148,6 +165,11 @@ authRouter.post(
  *                     followingCount:
  *                       type: integer
  *                       example: 8
+ *                     favorites:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *                         example: "60c54b2f9b1d4e3f2c123456"
  *       401:
  *         description: Unauthorized, email or password is incorrect
  *         content:
