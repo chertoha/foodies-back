@@ -56,6 +56,11 @@ usersRouter.use(authenticate);
  *                   type: integer
  *                   description: The number of users the current user is following
  *                   example: 20
+ *                 favorites:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                     example: "60c54b2f9b1d4e3f2c123456"
  *       401:
  *         $ref: '#/components/responses/UnauthorizedError'
  *     tags:
@@ -535,6 +540,50 @@ usersRouter.get("/:id/followers", isValidId, usersControllers.getFollowers);
  */
 
 usersRouter.get("/:id/recipes", isValidId, usersControllers.getUserRecipes);
+
+/**
+ * @openapi
+ * /users/avatar:
+ *   patch:
+ *     summary: Update user avatar
+ *     description: Allows a user to update their avatar by uploading an image file. Only 'jpg', 'jpeg', and 'png' formats are accepted.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               avatar:
+ *                 type: string
+ *                 format: binary
+ *                 description: The image file to upload (accepted formats - jpg, jpeg, png)
+ *     responses:
+ *       200:
+ *         description: Successfully updated the avatar
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 avatar:
+ *                   type: string
+ *                   example: "http://example.com/jane/avatar.png"
+ *       400:
+ *         description: Bad request, no file attached or file could not be read
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "No file attached or Could not read file."
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *     tags:
+ *       - Users
+ */
 
 usersRouter.patch("/avatar", handleMulterError(configuredUpload), usersControllers.updateAvatar);
 
