@@ -124,11 +124,22 @@ const createRecipe = async (req, res) => {
     throw HttpError(400, `Ingredients not found`);
   }
 
+  const updateIngredient = findIngredients.map(item => {
+    const ingredient = ingredients.find(({ name }) => name === item.name)
+    return {
+      _id: item._id,
+      name: item.name,
+      desc: item.desc,
+      img: item.img,
+      measure: ingredient.measure,
+    }
+  })
+
   const newRecipe = {
     ...req.body,
     area: findArea.name,
     category: findCategory.name,
-    ingredients,
+    ingredients: updateIngredient,
     owner,
     thumb: recipePhotoURL,
   }
@@ -136,7 +147,7 @@ const createRecipe = async (req, res) => {
   const result = await recipesServices.addRecipe({ ...newRecipe });
   await usersServices.updateUserById(owner, { $push: { recipes: result._id } });
 
-  res.status(201).json(result);
+  res.status(201).json(newRecipe);
 };
 
 
@@ -146,7 +157,7 @@ const deleteRecipe = async (req, res) => {
 
   const result = await recipesServices.removeRecipe({ _id, owner });
   if (!result) {
-    throw HttpError(400, "Recipe not found");
+    throw HttpError(404, "Recipe not found");
   }
 
   await usersServices.updateUserById(owner, { $pull: { recipe: _id } });
