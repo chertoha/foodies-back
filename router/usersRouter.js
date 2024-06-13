@@ -61,6 +61,11 @@ usersRouter.use(authenticate);
  *                   items:
  *                     type: string
  *                     example: "60c54b2f9b1d4e3f2c123456"
+ *                 following:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                     example: "60c54b2f9b1d4e3f2c123456"
  *       401:
  *         $ref: '#/components/responses/UnauthorizedError'
  *     tags:
