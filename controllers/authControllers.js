@@ -28,6 +28,7 @@ const registerUser = async (req, res) => {
       favoritesCount: newUser.favorites.length,
       followersCount: newUser.followers.length,
       followingCount: newUser.following.length,
+      favorites: newUser.favorites,
     },
   });
 };
@@ -55,6 +56,7 @@ const signinUser = async (req, res) => {
       favoritesCount: user.favorites.length,
       followersCount: user.followers.length,
       followingCount: user.following.length,
+      favorites: user.favorites,
     },
   });
 };
